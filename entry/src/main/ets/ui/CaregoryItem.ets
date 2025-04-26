@@ -1,0 +1,35 @@
+import { VRouter } from "../componet/VRouter"
+import { Category } from "../model/Category"
+
+/**
+ * Created by @juliswang on 2025/04/21 22:26
+ *
+ * @Description 目录 item 样式
+ */
+@Preview
+@Component
+export default struct CategoryItem {
+  data: Category = new Category()
+  contentSize: number = 12
+
+  build() {
+    Row() {
+      Image($r("app.media.ic_folder"))
+        .padding({
+          left: 5,
+          right: 2
+        })
+        .width(this.contentSize * 1.2)
+      Text(this.data.name)
+        .fontColor(Color.Black)
+        .fontSize(this.contentSize)
+      if (this.data.count) {
+        Text(`(${this.data.count.toString()})`)
+          .fontColor(Color.Black)
+          .fontSize(10)
+      }
+    }.onClick(() => {
+      VRouter.jumpTag(this.data)
+    })
+  }
+}

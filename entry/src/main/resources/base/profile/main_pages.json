@@ -1,0 +1,7 @@
+{
+  "src": [
+    "pages/Index",
+    "pages/post/PostDetail",
+    "pages/post/TagCatgDetail"
+  ]
+}
