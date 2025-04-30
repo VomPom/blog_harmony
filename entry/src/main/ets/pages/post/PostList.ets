@@ -6,6 +6,9 @@ import PostSummaryItem from "../../ui/PostSummaryItem";
 import { log } from "../../componet/Log";
 import Toolbar from "../../ui/widget/Toolbar";
 import { VRouter } from "../../componet/VRouter";
+import { PostsRepository } from "../../componet/repository/PostsRepository";
+import { BusinessError } from "@kit.BasicServicesKit";
+import { ToastUtils } from "../../componet/utils/ToastUtils";
 
 /**
  * Created by @juliswang on 2025/04/21 22:26
@@ -22,6 +25,7 @@ export default struct Blog {
   private currentPage: number = 1 // generate api index start from 1, not 0.
   private scroller: Scroller = new Scroller();
   showTabBarListener?: (showTabBar: boolean) => void
+  private repository: PostsRepository = new PostsRepository()
 
   aboutToAppear(): void {
     this.loadPostPages()
@@ -54,7 +58,7 @@ export default struct Blog {
                 resolve('no more...')
                 return
               }
-              loadPostSummaryList(++this.currentPage).then((postSummaryList) => {
+              this.repository.loadPosts(++this.currentPage).then((postSummaryList) => {
                 if (postSummaryList != null) {
                   this.posts = this.posts.concat(postSummaryList.posts)
                   resolve('success...');
@@ -99,18 +103,24 @@ export default struct Blog {
   async loadPostPages() {
     this.posts.length = 0
     this.loadState = LoadState.LOADING
-    loadPostPages().then((data) => {
-      this.loadState = LoadState.SUCCESS
+    this.repository.loadPostPages().then((data) => {
       this.maxPages = data.pages.length
       this.currentPage = 1
       this.hasMore = this.maxPages > this.currentPage
-      loadPostSummaryList(this.currentPage).then((postSummaryList) => {
-        if (postSummaryList != null) {
-          this.posts = this.posts.concat(postSummaryList.posts)
-        } else {
-          this.hasMore = false;
-        }
-      })
-    }).catch()
+      this.repository.loadPosts(this.currentPage)
+        .then((postSummaryList) => {
+          this.loadState = LoadState.SUCCESS
+          if (postSummaryList != null) {
+            this.posts = this.posts.concat(postSummaryList.posts)
+          } else {
+            this.hasMore = false;
+          }
+        })
+        .catch((e: BusinessError) => {
+          ToastUtils.show(e.message)
+        })
+    }).catch((e: BusinessError) => {
+      ToastUtils.show(e.message)
+    })
   }
 }

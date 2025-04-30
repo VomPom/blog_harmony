@@ -3,15 +3,17 @@ import { uri } from "@kit.ArkTS";
 import hilog from '@ohos.hilog';
 import Response from "./Response";
 import { log } from "../Log";
+import AppConfig from "../config/AppConfig";
 
 const TAG = "Request";
-const BASE_URL: string = "https://julis.wang/";
 
 
 export default class Request {
   private static instance: Request;
 
+
   private constructor() {
+
   }
 
   static getInstance(): Request {
@@ -33,7 +35,7 @@ export default class Request {
 
   async request<T>(path: string, method: http.RequestMethod, extraData?: object): Promise<Response<T>> {
     return new Promise<Response<T>>((resolve, reject) => {
-      const url = BASE_URL + path;
+      const url = AppConfig.BASE_URL + path;
       log('request url:' + url)
       const httpRequest = http.createHttp();
 
@@ -50,17 +52,25 @@ export default class Request {
         // header: headers,
         extraData: extraData
       }, (err, data) => {
-        hilog.debug(0, TAG, "http request response:" + JSON.stringify(data) + " err:" + err)
-        const res = new Response<T>()
-        if (data.responseCode == 200) {
-          const r = data.result as Response<T>
-          res.api = r.api
-          res.data = r.data
-        } else {
+        try {
+          hilog.debug(0, TAG, "http request response:" + JSON.stringify(data) + " err:" + err)
           const res = new Response<T>()
-          res.errorCode = data.responseCode
+          if (data.responseCode == 200) {
+            let r = data.result as Response<T>
+            if (typeof data.result === 'string') {
+              r = JSON.parse(data.result.toLocaleString()) as Response<T>
+            }
+            res.api = r.api
+            res.data = r.data
+          } else {
+            const res = new Response<T>()
+            res.errorCode = data.responseCode
+          }
+
+          resolve(res)
+        } catch (e) {
+          log('request error:' + e)
         }
-        resolve(res)
       })
     })
   }

@@ -11,6 +11,7 @@ struct Index {
   @State showTabBar: boolean = true
   private tabController: TabsController = new TabsController()
   @State isPermissionGrant: boolean = false
+  @StorageLink('isDarkTheme') isDarkTheme: boolean = false
 
   aboutToAppear(): void {
     OHPermission.requestPermission(getContext(this), ['ohos.permission.INTERNET'])
@@ -66,9 +67,8 @@ struct Index {
   createTabMenu(index: number) {
     Stack({ alignContent: Alignment.Center }) {
       Column() {
-        Image(this.currentIndex === index ? `/images/main_page_index${index}_pre.png` :
-          `/images/main_page_index${index}_nor.png`)
-          .width(29.714)
+        Image(this.gotIcon(this.currentIndex === index, index))
+          .width(30)
           .height(26)
           .objectFit(ImageFit.Fill)
           .margin({ bottom: 3 })
@@ -78,8 +78,20 @@ struct Index {
       .width(42)
       .height(40)
     }
-    .backgroundColor("#f4f4f4")
+    .backgroundColor($r('app.color.tab_bg'))
     .width("100%")
     .height("100%")
+  }
+
+  private gotIcon(isSelected: boolean, index: number): Resource {
+    const darkRes = $r(`app.media.ic_tab_${index + 1}_dark`)
+    const lightRes = $r(`app.media.ic_tab_${index + 1}_light`)
+    let result: Resource
+    if (isSelected) {
+      result = this.isDarkTheme ? lightRes : darkRes
+    } else {
+      result = this.isDarkTheme ? darkRes : lightRes
+    }
+    return result
   }
 }

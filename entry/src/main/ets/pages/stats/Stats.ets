@@ -1,14 +1,14 @@
-import { loadCategories, loadTags } from "../../api/StatsApi"
 import { Tag } from "../../model/Tag"
 import { Category } from "../../model/Category"
 import TagItem from "../../ui/TagItem"
-import { loadPostPages } from "../../api/PostApi"
 import { Pages } from "../../model/Page"
 import { ContentWithBorder } from "../../ui/ContentWithBorder"
 import { ContentWithToolbar } from "../../ui/ContentPage"
 import CategoryItem from "../../ui/CaregoryItem"
 import { StatsRepository } from "../../componet/repository/StatsRepository"
-import { ToastUtils } from "../../componet/utils/ToastUtils"
+import { log } from "../../componet/Log"
+import { faceDetector } from "@kit.CoreVisionKit"
+import { LoadState, PageLoading } from "../../ui/widget/PageLoading"
 
 /**
  * Created by @juliswang on 2025/04/21 22:36
@@ -21,27 +21,12 @@ export default struct Stats {
   @State tags: Tag[] = []
   @State categories: Category[] = []
   @State postPage: Pages = new Pages()
+  @State forceRefresh: boolean = false
+  @State loadState: LoadState = LoadState.LOADING
   repository: StatsRepository = new StatsRepository()
 
   aboutToAppear(): void {
-    this.repository.getTags().then((data) => {
-      this.tags = this.tags.concat(data)
-    }).catch((err: object) => {
-      ToastUtils.show("d")
-    })
-
-    this.repository.getCategories().then((data) => {
-      this.categories = this.categories.concat(data)
-    }).catch((err: object) => {
-      ToastUtils.show("d")
-    })
-
-    this.repository.getPosts().then((data) => {
-      this.postPage = data
-    }).catch((err: object) => {
-      ToastUtils.show("d")
-    })
-
+    this.loadData()
   }
 
   build() {
@@ -50,7 +35,8 @@ export default struct Stats {
       showBack: false,
       subIconSrc: $r('app.media.ic_refresh',),
       onSubIconClick: () => {
-
+        this.forceRefresh = true
+        this.loadData()
       }
     }) {
       this.Summary()
@@ -62,10 +48,10 @@ export default struct Stats {
   @Builder
   Summary() {
     Row() {
-      StatsLabel({ count: this.postPage.count, label: "篇" })
+      StatsLabel({ count: this.postPage.count, state: this.loadState, label: "篇" })
       // StatsLabel({ count: calLetters(this.allPost), label: "字数" })
-      StatsLabel({ count: this.categories.length, label: "分类" })
-      StatsLabel({ count: this.tags.length, label: "标签" })
+      StatsLabel({ count: this.categories.length, state: this.loadState, label: "分类" })
+      StatsLabel({ count: this.tags.length, state: this.loadState, label: "标签" })
     }
     .justifyContent(FlexAlign.SpaceBetween)
   }
@@ -110,20 +96,29 @@ export default struct Stats {
       .margin({ bottom: 10 })
   }
 
-  loadData(useNet: boolean) {
-    if (useNet) {
-      loadTags().then((data) => {
-        this.tags = this.tags.concat(data)
-      })
-      loadCategories().then((data) => {
-        this.categories = this.categories.concat(data)
-      })
-      loadPostPages().then((data) => {
-        this.postPage = data
-      })
-    } else {
+  loadData() {
+    this.loadState = LoadState.LOADING
+    this.repository.getTags(this.forceRefresh).then((data) => {
+      this.tags = [...data]
+      this.loadState = LoadState.SUCCESS
+    }).catch((err: object) => {
+      log(`[getTags] err, err:${err}`)
+    })
 
-    }
+    this.repository.getCategories(this.forceRefresh).then((data) => {
+      this.categories =[...data]
+      this.loadState = LoadState.SUCCESS
+    }).catch((err: object) => {
+      log(`[getCategories] err, err:${err}`)
+    })
+
+    this.repository.getPostPage(this.forceRefresh).then((data) => {
+      this.postPage = data
+      this.loadState = LoadState.SUCCESS
+    }).catch((err: object) => {
+      log(`[getPostsPage] err, err:${err}`)
+    })
+
   }
 }
 
@@ -132,14 +127,26 @@ export default struct Stats {
 struct StatsLabel {
   @Prop count: number
   @Prop label: string
+  @Prop state: LoadState
 
   build() {
     Column() {
-      Text(this.count.toString())
-        .fontColor($r('app.color.post_text'))
-        .fontSize(15)
+      Column() {
+        if (this.state == LoadState.LOADING) {
+          Image($r('app.media.ic_refresh'))
+            .width(15)
+            .height(15)
+        } else {
+          Text(this.count.toString())
+            .fontColor($r("app.color.text_content"))
+            .fontSize(15)
+        }
+      }
+      .width(30)
+      .height(15)
+
       Text(this.label)
-        .fontColor($r('app.color.post_desc'))
+        .fontColor($r("app.color.title_desc"))
         .fontSize(12)
     }
     .layoutWeight(1)

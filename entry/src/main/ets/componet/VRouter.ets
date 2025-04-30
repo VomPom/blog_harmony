@@ -9,7 +9,7 @@ export class VRouter {
   }
 
   static jumpPost(data: Post) {
-    router.pushUrl({ url: "pages/post/TagDetail", params: { data: data } })
+    router.pushUrl({ url: 'pages/post/PostDetail', params: { data: data } })
   }
 
   static jumpTag(data: Tag | Category) {

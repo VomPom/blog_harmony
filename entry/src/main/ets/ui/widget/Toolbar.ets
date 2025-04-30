@@ -10,7 +10,7 @@ export default struct Toolbar {
   showSub: boolean = true
   subIconSrc: string | PixelMap | Resource = $r("app.media.ic_toolbar_more")
   onSubIconClick: () => void = unDevTip
-  private backSrc: string | PixelMap | Resource = $r("app.media.ic_back_black")
+  private backSrc: string | PixelMap | Resource = $r("app.media.ic_toolbar_back")
   private subTitle: string = "更多"
 
   build() {
@@ -26,7 +26,7 @@ export default struct Toolbar {
             })
         }
         Text(this.title)
-          .fontColor(Color.Black)
+          .fontColor($r("app.color.title_text"))
           .fontSize(15)
           .margin({ left: 15 })
           .maxLines(1)

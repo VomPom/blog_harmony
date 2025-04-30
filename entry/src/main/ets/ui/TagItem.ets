@@ -14,11 +14,11 @@ export default struct TagItem {
 
   build() {
     Row() {
-      Image($r("app.media.post_tag"))
+      Image($r("app.media.ic_post_tag"))
         .width(15)
         .height(15)
       Text(this.data.name)
-        .fontColor(Color.Black)
+        .fontColor($r("app.color.text_content"))
         .fontSize(12)
         .padding({
           top: 2,
@@ -26,7 +26,7 @@ export default struct TagItem {
         })
       if (this.showCount) {
         Text(`(${this.data.count})`)
-          .fontColor(Color.Black)
+          .fontColor($r("app.color.text_content"))
           .fontSize(8)
           .padding({
             top: 2,

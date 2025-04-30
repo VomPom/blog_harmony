@@ -9,64 +9,8 @@
       "value": "#FFFFFF"
     },
     {
-      "name": "translucent_black_40",
-      "value": "#66000000"
-    },
-    {
-      "name": "translucent_black_50",
-      "value": "#80000000"
-    },
-    {
       "name": "main",
-      "value": "#4CAF50"
-    },
-    {
-      "name": "text_h1",
-      "value": "#212121"
-    },
-    {
-      "name": "text_h2",
-      "value": "#757575"
-    },
-    {
-      "name": "divider",
-      "value": "#EEEEEE"
-    },
-    {
-      "name": "navi_tab_unselect",
-      "value": "#424242"
-    },
-    {
-      "name": "navi_bar_bg",
-      "value": "#FFFFFF"
-    },
-    {
-      "name": "title_bar_bg",
-      "value": "#FAFAFA"
-    },
-    {
-      "name": "red",
-      "value": "#F44336"
-    },
-    {
-      "name": "blue",
-      "value": "#2196F3"
-    },
-    {
-      "name": "green",
-      "value": "#4CAF50"
-    },
-    {
-      "name": "cyan",
-      "value": "#00BCD4"
-    },
-    {
-      "name": "teal",
-      "value": "#009688"
-    },
-    {
-      "name": "hot_key_bg",
-      "value": "#DDDDDD"
+      "value": "#3070e5"
     },
     {
       "name": "tag_bg",
@@ -81,7 +25,7 @@
       "value": "#FFFFFF"
     },
     {
-      "name": "post_text",
+      "name": "text_content",
       "value": "#333333"
     },
     {
@@ -93,8 +37,24 @@
       "value": "#F7F9FA"
     },
     {
-      "name": "post_desc",
+      "name": "title_desc",
       "value": "#9f9f9f"
+    },
+    {
+      "name": "post_summary",
+      "value": "#333333"
+    },
+    {
+      "name": "avatar_shadow",
+      "value": "#bfbfbf"
+    },
+    {
+      "name": "light_color",
+      "value": "#3070e5"
+    },
+    {
+      "name": "tab_bg",
+      "value": "#f4f4f4"
     }
   ]
 }

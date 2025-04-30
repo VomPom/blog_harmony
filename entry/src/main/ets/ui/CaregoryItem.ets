@@ -21,11 +21,11 @@ export default struct CategoryItem {
         })
         .width(this.contentSize * 1.2)
       Text(this.data.name)
-        .fontColor(Color.Black)
+        .fontColor($r("app.color.text_content"))
         .fontSize(this.contentSize)
       if (this.data.count) {
         Text(`(${this.data.count.toString()})`)
-          .fontColor(Color.Black)
+          .fontColor($r("app.color.text_content"))
           .fontSize(10)
       }
     }.onClick(() => {

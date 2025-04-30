@@ -2,7 +2,59 @@
   "color": [
     {
       "name": "start_window_background",
-      "value": "#000000"
+      "value": "#FAFAFA"
+    },
+    {
+      "name": "white",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "main",
+      "value": "#3070e5"
+    },
+    {
+      "name": "tag_bg",
+      "value": "#1b1b1b"
+    },
+    {
+      "name": "post_time",
+      "value": "#6f7173"
+    },
+    {
+      "name": "content_bg",
+      "value": "#131313"
+    },
+    {
+      "name": "text_content",
+      "value": "#ababab"
+    },
+    {
+      "name": "title_text",
+      "value": "#ababab"
+    },
+    {
+      "name": "page_bg",
+      "value": "#80131313"
+    },
+    {
+      "name": "title_desc",
+      "value": "#919294"
+    },
+    {
+      "name": "post_summary",
+      "value": "#9f9f9f"
+    },
+    {
+      "name": "avatar_shadow",
+      "value": "#bfbfbf"
+    },
+    {
+      "name": "light_color",
+      "value": "#3070e5"
+    },
+    {
+      "name": "tab_bg",
+      "value": "#131313"
     }
   ]
 }

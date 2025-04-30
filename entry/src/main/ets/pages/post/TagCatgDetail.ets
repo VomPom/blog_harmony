@@ -8,6 +8,7 @@ import { LoadState, PageLoading } from '../../ui/widget/PageLoading'
 import { Category } from '../../model/Category'
 import { ToastUtils } from '../../componet/utils/ToastUtils'
 import { Page } from '../../model/Page'
+import { VRouter } from '../../componet/VRouter'
 
 /**
  * Created by @juliswang on 2025/04/23 21:26
@@ -51,10 +52,7 @@ struct TagCatgDetail {
         ListItem() {
           PostSummaryItem({ data: item })
             .onClick(() => {
-              router.pushUrl({
-                url: 'pages/post/PostDetail',
-                params: { data: item }
-              })
+              VRouter.jumpPost(item)
             })
         }
       })

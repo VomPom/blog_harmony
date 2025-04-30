@@ -7,7 +7,7 @@ import { HPRichTextV2, RichTextOptionModelV2 } from '@ohasasugar/hp-richtext';
 /**
  * Created by @juliswang on 2025/04/21 22:26
  *
- * @Description 文章内容详情页面
+ * @Description 文章内容详情页面  todo:: better ui show content.
  */
 @Preview
 @Entry
@@ -51,12 +51,20 @@ struct PostDetail {
     Column() {
       Toolbar({ title: this.postSummary.title })
       // todo:: optimize content
-      HPRichTextV2({
-        richTextModel: this.richTextModel
-      })
-        .height('100%')
-        .width('100%')
-        .margin({ left: 20, right: 20, bottom: 250 })
+
+      RichText(this.postSummary.content)
+        .onStart(() => {
+          console.log('RichText loading started');
+        })
+        .onComplete(() => {
+          console.log('RichText loading completed');
+        })
+        .margin({
+          top: 10,
+          bottom: 10,
+          left: 5
+        })
+
       Blank().height(50).backgroundColor(Color.Red)
     }
   }
