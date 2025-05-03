@@ -2,6 +2,7 @@ import OHPermission from '../componet/OHPermission'
 import Blog from './post/PostList'
 import Mine from './mine/Mine'
 import Stats from './stats/Stats'
+import WindowManager from '../componet/WindowManager'
 
 @Preview
 @Entry
@@ -30,7 +31,7 @@ struct Index {
           TabContent() {
             Blog({
               showTabBarListener: (showTabBar: boolean) => {
-                // this.showTabBar = showTabBar
+                this.showTabBar = showTabBar
               }
             })
           }
@@ -49,6 +50,8 @@ struct Index {
         .width("100%")
         .height("100%")
         .layoutWeight(1)
+        .barHeight(this.showTabBar ? 50 : 0)
+        .padding({ bottom: WindowManager.navBarHeight })
         .backgroundColor($r("app.color.page_bg"))
         .vertical(false)
         .onChange((index: number) => {

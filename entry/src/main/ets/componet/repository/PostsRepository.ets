@@ -6,6 +6,7 @@ import { BaseRepository, P } from './BaseRepository';
 const PREFERENCES_NAME = 'vm_posts'
 const KEY_PAGES = 'key_pages'
 const KEY_PAGE_I = 'key_page'
+const KEY_UPDATE_T = 'key_update_time'
 
 /**
  * Copyright (C) @2025 THL A29 Limited. All rights reserved.
@@ -41,6 +42,15 @@ export class PostsRepository extends BaseRepository {
     })
   }
 
+
+  getUpdateTime(): number {
+    return this.loadData(KEY_UPDATE_T) as number
+  }
+
+  setUpdateTime() {
+    const value = new Date().getTime()
+    this.saveData(KEY_UPDATE_T, value)
+  }
 
   preferencesName(): string {
     return PREFERENCES_NAME

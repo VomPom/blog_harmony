@@ -3,6 +3,7 @@ import Toolbar from "../../ui/widget/Toolbar";
 import router from "@ohos.router";
 import { loadPostDetail } from "../../api/PostApi";
 import { HPRichTextV2, RichTextOptionModelV2 } from '@ohasasugar/hp-richtext';
+import { webview } from "@kit.ArkWeb";
 
 /**
  * Created by @juliswang on 2025/04/21 22:26
@@ -39,12 +40,12 @@ struct PostDetail {
     "api": "api/posts/2025/02/24/Android屏幕刷新机制.json",
   }
   private postSummary: Post = this.post
+  private webController: webview.WebviewController = new webview.WebviewController();
   richTextModel: RichTextOptionModelV2 = new RichTextOptionModelV2();
 
   async aboutToAppear() {
     // todo:: make a custom router with params transit.
     this.postSummary = (router.getParams() as object)['data'] as Post
-    this.loadPost(this.postSummary.api)
   }
 
   build() {
@@ -52,29 +53,19 @@ struct PostDetail {
       Toolbar({ title: this.postSummary.title })
       // todo:: optimize content
 
-      RichText(this.postSummary.content)
-        .onStart(() => {
-          console.log('RichText loading started');
+      Web({ src: '', controller: this.webController })
+        .onControllerAttached(() => {
+          this.webController.loadData(this.postSummary.content, 'text/html', "UTF-8", 'about:blank',
+            'about:blank')
         })
-        .onComplete(() => {
-          console.log('RichText loading completed');
+        .width('100%')
+        .height('100%')
+        .zoomAccess(false)
+        .nestedScroll({
+          scrollForward: NestedScrollMode.SELF_FIRST,
+          scrollBackward: NestedScrollMode.SELF_FIRST
         })
-        .margin({
-          top: 10,
-          bottom: 10,
-          left: 5
-        })
-
-      Blank().height(50).backgroundColor(Color.Red)
+        .layoutMode(WebLayoutMode.FIT_CONTENT)
     }
-  }
-
-  async loadPost(path: string) {
-    loadPostDetail(path).then((data) => {
-      this.post = data
-      this.richTextModel.richTextOption = {
-        content: this.post.content!!
-      }
-    }).catch()
   }
 }

@@ -37,7 +37,6 @@ export default struct Mine {
     .width('95%')
     .height('100%')
     .alignItems(HorizontalAlign.Start)
-    .backgroundColor($r("app.color.page_bg"))
   }
 
   @Builder

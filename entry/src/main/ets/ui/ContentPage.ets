@@ -22,7 +22,6 @@ export struct ContentWithToolbar {
       this.content()
     }
     .alignItems(HorizontalAlign.Start)
-    .backgroundColor($r("app.color.page_bg"))
     .align(Alignment.Top)
     .height('100%')
     .width('95%')

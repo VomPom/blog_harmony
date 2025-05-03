@@ -5,6 +5,7 @@ import { Tag } from "../model/Tag";
 import { Category } from "../model/Category";
 import TagItem from "./TagItem";
 import CategoryItem from "./CaregoryItem";
+import { webview } from "@kit.ArkWeb";
 
 /**
  * Created by @juliswang on 2025/04/21 22:25
@@ -55,7 +56,8 @@ export default struct PostSummaryItem {
         Blank().height(3)
         this.TimeAndCategories()
         Blank().height(5)
-        this.Summary()
+        // todo: use better way to show summary.
+        // this.Summary()
         Blank().height(5)
         this.Tags()
       }
@@ -98,11 +100,6 @@ export default struct PostSummaryItem {
       .onComplete(() => {
         console.log('RichText loading completed');
       })
-      // .maxLines(5)
-      // .ellipsisMode(EllipsisMode.END)
-      // .textOverflow({ overflow: TextOverflow.Ellipsis })
-      // .fontSize(14)
-      // .fontColor($r("app.color.post_summary"))
       .margin({
         top: 10,
         bottom: 10,

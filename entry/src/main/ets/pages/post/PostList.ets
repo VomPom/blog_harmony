@@ -1,4 +1,3 @@
-import { loadPostPages, loadPostSummaryList } from "../../api/PostApi"
 import { LoadState, PageLoading } from "../../ui/widget/PageLoading"
 import { PullToRefresh } from '@ohos/pulltorefresh'
 import { Post } from "../../model/Post";
@@ -9,6 +8,7 @@ import { VRouter } from "../../componet/VRouter";
 import { PostsRepository } from "../../componet/repository/PostsRepository";
 import { BusinessError } from "@kit.BasicServicesKit";
 import { ToastUtils } from "../../componet/utils/ToastUtils";
+import TimeUtils from "../../componet/utils/TimeUtils";
 
 /**
  * Created by @juliswang on 2025/04/21 22:26
@@ -21,6 +21,7 @@ export default struct Blog {
   @State posts: Post[] = [];
   @State loadState: LoadState = LoadState.LOADING
   @State hasMore: boolean = true
+  @State title: string = '博客文章'
   private maxPages: number = 0
   private currentPage: number = 1 // generate api index start from 1, not 0.
   private scroller: Scroller = new Scroller();
@@ -29,11 +30,12 @@ export default struct Blog {
 
   aboutToAppear(): void {
     this.loadPostPages()
+    this.updateTitle()
   }
 
   build() {
     Column() {
-      Toolbar({ title: '博客文章', showBack: false })
+      Toolbar({ title: this.title, showBack: false })
       PageLoading({
         loadState: this.loadState,
         onReload: () => {
@@ -47,9 +49,8 @@ export default struct Blog {
             this.postList();
           },
           onRefresh: () => {
-            return new Promise<string>((resolve, reject) => {
-              this.loadPostPages()
-            });
+            this.repository.setUpdateTime()
+            return this.loadPostPages();
           },
           onLoadMore: () => {
             log('load more...')
@@ -90,7 +91,12 @@ export default struct Blog {
       if (this.loadState == LoadState.LOADING) {
         return
       }
-      this.showTabBarListener?.(scrollOffset < 0)
+      log("scrollOffset:" + scrollOffset + " scrollState:" + scrollState)
+      if (scrollState == ScrollState.Scroll) {
+        this.showTabBarListener?.(scrollOffset < 0)
+      } else if (scrollState == ScrollState.Idle) {
+        this.showTabBarListener?.(true)
+      }
     })
     .scrollBar(BarState.Off)
     .width('95%')
@@ -100,27 +106,36 @@ export default struct Blog {
     .edgeEffect(EdgeEffect.None) // 必须设置列表为滑动到边缘无效果
   }
 
-  async loadPostPages() {
-    this.posts.length = 0
-    this.loadState = LoadState.LOADING
-    this.repository.loadPostPages().then((data) => {
-      this.maxPages = data.pages.length
-      this.currentPage = 1
-      this.hasMore = this.maxPages > this.currentPage
-      this.repository.loadPosts(this.currentPage)
-        .then((postSummaryList) => {
-          this.loadState = LoadState.SUCCESS
-          if (postSummaryList != null) {
-            this.posts = this.posts.concat(postSummaryList.posts)
-          } else {
-            this.hasMore = false;
-          }
-        })
-        .catch((e: BusinessError) => {
-          ToastUtils.show(e.message)
-        })
-    }).catch((e: BusinessError) => {
-      ToastUtils.show(e.message)
+  loadPostPages(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.posts.length = 0
+      this.loadState = LoadState.LOADING
+      this.repository.loadPostPages().then((data) => {
+        this.maxPages = data.pages.length
+        this.currentPage = 1
+        this.hasMore = this.maxPages > this.currentPage
+        this.repository.loadPosts(this.currentPage)
+          .then((postSummaryList) => {
+            resolve('刷新成功')
+            this.loadState = LoadState.SUCCESS
+            if (postSummaryList != null) {
+              this.posts = this.posts.concat(postSummaryList.posts)
+            } else {
+              this.hasMore = false;
+            }
+          })
+          .catch((e: BusinessError) => {
+            ToastUtils.show(e.message)
+            reject(e)
+          })
+      }).catch((e: BusinessError) => {
+        ToastUtils.show(e.message)
+        reject(e)
+      })
     })
+  }
+
+  updateTitle() {
+    this.title = `博客文章(${TimeUtils.calTimeDifference(this.repository.getUpdateTime())}更新)`
   }
 }
