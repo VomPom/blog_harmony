@@ -5,7 +5,7 @@ import WindowManager from '../../componet/WindowManager'
 @Preview
 @Component
 export default struct Toolbar {
-  title: string = ''
+  @Prop title: string = ''
   showBack: boolean = true
   showSub: boolean = true
   subIconSrc: string | PixelMap | Resource = $r("app.media.ic_toolbar_more")

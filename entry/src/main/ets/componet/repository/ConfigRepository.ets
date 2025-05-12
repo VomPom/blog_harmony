@@ -1,8 +1,6 @@
 import { BaseRepository } from "./BaseRepository";
 
 /**
- * Copyright (C) @2025 THL A29 Limited, a Tencent company. All rights reserved.
- *
  * Created by @juliswang on 2025/04/30 14:30
  *
  * @Description

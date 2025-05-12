@@ -48,9 +48,9 @@ struct TagCatgDetail {
   @Builder
   private PostList() {
     List({ scroller: this.scroller }) {
-      ForEach(this.posts, (item: Post) => {
+      ForEach(this.posts, (item: Post, index: number) => {
         ListItem() {
-          PostSummaryItem({ data: item })
+          PostSummaryItem({ data: item, index: index + 1 })
             .onClick(() => {
               VRouter.jumpPost(item)
             })

@@ -43,6 +43,9 @@ export default class TimeUtils {
   }
 
   static calTimeDifference(targetTime: number): string {
+    if (targetTime <= 0) {
+      return "刚刚";
+    }
     const currentTime = new Date().getTime();
     const timeDifference = currentTime - targetTime;
     const seconds = Math.floor(timeDifference / 1000);

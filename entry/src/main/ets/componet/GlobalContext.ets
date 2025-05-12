@@ -1,6 +1,4 @@
 /**
- * Copyright (C) @2025 THL A29 Limited, a Tencent company. All rights reserved.
- *
  * Created by @juliswang on 2025/04/29 22:53
  *
  * @Description 全局 Context 处理

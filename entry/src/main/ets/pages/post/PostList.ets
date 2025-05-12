@@ -50,7 +50,8 @@ export default struct Blog {
           },
           onRefresh: () => {
             this.repository.setUpdateTime()
-            return this.loadPostPages();
+            this.updateTitle()
+            return this.loadPostPages(true);
           },
           onLoadMore: () => {
             log('load more...')
@@ -78,9 +79,9 @@ export default struct Blog {
   @Builder
   private postList() {
     List({ scroller: this.scroller }) {
-      ForEach(this.posts, (item: Post) => {
+      ForEach(this.posts, (item: Post, index: number) => {
         ListItem() {
-          PostSummaryItem({ data: item })
+          PostSummaryItem({ data: item, index: index + 1 })
             .onClick(() => {
               VRouter.jumpPost(item)
             })
@@ -106,15 +107,15 @@ export default struct Blog {
     .edgeEffect(EdgeEffect.None) // 必须设置列表为滑动到边缘无效果
   }
 
-  loadPostPages(): Promise<string> {
+  loadPostPages(forceUpdate: boolean = false): Promise<string> {
     return new Promise((resolve, reject) => {
       this.posts.length = 0
       this.loadState = LoadState.LOADING
-      this.repository.loadPostPages().then((data) => {
+      this.repository.loadPostPages(forceUpdate).then((data) => {
         this.maxPages = data.pages.length
         this.currentPage = 1
         this.hasMore = this.maxPages > this.currentPage
-        this.repository.loadPosts(this.currentPage)
+        this.repository.loadPosts(this.currentPage, forceUpdate)
           .then((postSummaryList) => {
             resolve('刷新成功')
             this.loadState = LoadState.SUCCESS

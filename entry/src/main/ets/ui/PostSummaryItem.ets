@@ -15,6 +15,7 @@ import { webview } from "@kit.ArkWeb";
 @Preview
 @Component
 export default struct PostSummaryItem {
+  index: number = 0
   data: Post = {
     "title": "Android屏幕刷新机制",
     "slug": "Android屏幕刷新机制",
@@ -45,24 +46,23 @@ export default struct PostSummaryItem {
   build() {
     Stack() {
       Column() {
-        Text(this.data.title)
-          .fontSize(16)
-          .fontWeight(500)
-          .fontColor($r("app.color.text_content"))
-          .margin({
-            top: 3
-          })
-          .textOverflow({ overflow: TextOverflow.Ellipsis })
+        this.Title()
         Blank().height(3)
         this.TimeAndCategories()
         Blank().height(5)
         // todo: use better way to show summary.
-        // this.Summary()
+        this.Summary()
         Blank().height(5)
         this.Tags()
       }
       .alignItems(HorizontalAlign.Start)
     }
+    .shadow({
+      radius: 5,
+      offsetY: 0,
+      offsetX: 0,
+      color: "#bfbfbf"
+    })
     .width('100%')
     .padding(5)
     .margin({ bottom: 10 })
@@ -73,8 +73,33 @@ export default struct PostSummaryItem {
   }
 
   @Builder
+  Title() {
+    Text(this.data.title)
+      .fontSize(16)
+      .fontWeight(500)
+      .fontColor($r("app.color.text_content"))
+      .margin({
+        top: 3
+      })
+      .textOverflow({ overflow: TextOverflow.Ellipsis })
+  }
+
+  @Builder
   TimeAndCategories() {
     Row() {
+      Stack() {
+        Text(`[${this.index}]`)
+          .fontSize(10)
+          .fontWeight(500)
+          .fontColor($r("app.color.text_content"))
+      }
+      .alignContent(Alignment.Center)
+      .borderRadius(5)
+      .width(22)
+      .height(12)
+      .margin({ right: 2 })
+      .backgroundColor($r('app.color.tag_bg'))
+
       Text(TimeUtils.format1(this.data.date))
         .fontSize(12)
         .fontWeight(500)
@@ -86,24 +111,20 @@ export default struct PostSummaryItem {
         })
       }
     }
-    .margin({
-      left: 5
-    })
   }
 
   @Builder
   Summary() {
-    RichText(this.data.content)
-      .onStart(() => {
-        console.log('RichText loading started');
-      })
-      .onComplete(() => {
-        console.log('RichText loading completed');
-      })
+    Text(this.data.content?.replace(/<[^>]*>/g, '').substring(0, 500))
+      .maxLines(5)
+      .fontSize(13)
+      .borderRadius(5)
+      .padding(5)
+      .backgroundColor($r('app.color.summary_bg'))
+      .textOverflow({ overflow: TextOverflow.Ellipsis })
       .margin({
-        top: 10,
-        bottom: 10,
-        left: 5
+        top: 3,
+        bottom: 3,
       })
 
   }
@@ -116,7 +137,6 @@ export default struct PostSummaryItem {
           .margin({ right: 5 })
       })
     }.margin({
-      left: 5,
       bottom: 5
     })
   }

@@ -15,4 +15,8 @@ export class VRouter {
   static jumpTag(data: Tag | Category) {
     router.pushUrl({ url: "pages/post/TagCatgDetail", params: { data: data } })
   }
+
+  static getParams(): Object {
+    return router.getParams()
+  }
 }

@@ -1,11 +1,9 @@
-import { common, ConfigurationConstant } from "@kit.AbilityKit";
+import { ConfigurationConstant } from "@kit.AbilityKit";
 import { GlobalContext } from "./GlobalContext";
 import { log } from "./Log";
 import { ConfigRepository } from "./repository/ConfigRepository";
 
 /**
- * Copyright (C) @2025 THL A29 Limited, a Tencent company. All rights reserved.
- *
  * Created by @juliswang on 2025/04/29 22:47
  *
  * @Description 夜览模式相关处理

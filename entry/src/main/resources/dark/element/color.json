@@ -17,6 +17,10 @@
       "value": "#1b1b1b"
     },
     {
+      "name": "summary_bg",
+      "value": "#401b1b1b"
+    },
+    {
       "name": "post_time",
       "value": "#6f7173"
     },
