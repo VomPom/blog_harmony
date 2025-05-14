@@ -3,7 +3,6 @@ import { Pages } from '../../model/Page';
 import { PostSummaryList } from '../../model/Post';
 import { BaseRepository, P } from './BaseRepository';
 
-const PREFERENCES_NAME = 'vm_posts'
 const KEY_PAGES = 'key_pages'
 const KEY_PAGE_I = 'key_page'
 const KEY_UPDATE_T = 'key_update_time'
@@ -30,9 +29,8 @@ export class PostsRepository extends BaseRepository {
 
   setUpdateTime() {
     const value = new Date().getTime()
-    this.saveData(KEY_UPDATE_T, value)
+    this.saveData<number>(KEY_UPDATE_T, value)
   }
 
-  getUpdateTime = () => this.loadData(KEY_UPDATE_T) as number
-  preferencesName = () => PREFERENCES_NAME
+  getUpdateTime = () => this.loadData<number>(KEY_UPDATE_T, 0)
 }

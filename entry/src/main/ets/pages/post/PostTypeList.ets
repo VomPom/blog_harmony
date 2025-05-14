@@ -3,10 +3,9 @@ import { router } from '@kit.ArkUI'
 import Toolbar from '../../ui/widget/Toolbar'
 import { loadCategoryList, loadCategoryPage, loadTagList, loadTagPage } from '../../api/StatsApi'
 import { Post, PostSummaryList } from '../../model/Post'
-import PostSummaryItem from '../../ui/PostSummaryItem'
+import PostSummaryItem, { PostItemScene } from '../../ui/PostSummaryItem'
 import { LoadState, PageLoading } from '../../ui/widget/PageLoading'
 import { Category } from '../../model/Category'
-import { ToastUtils } from '../../componet/utils/ToastUtils'
 import { Page } from '../../model/Page'
 import { VRouter } from '../../componet/VRouter'
 
@@ -18,23 +17,31 @@ import { VRouter } from '../../componet/VRouter'
 @Preview
 @Entry
 @Component
-struct TagCatgDetail {
-  @State data: Tag | Category = new Tag()
-  @State posts: Post[] = [];
-  @State loadState: LoadState = LoadState.LOADING
+struct PostTypeList {
+  @State tag: Tag = new Tag()
+  @State category: Category = new Category()
+  @State posts: Post[] = []
+  @State scene: PostItemScene = PostItemScene.ALL_POST
+  @State _posts: Post[] = [];
+  @State _title: string = ''
+  @State _loadState: LoadState = LoadState.LOADING
   scroller: Scroller = new Scroller();
 
   async aboutToAppear() {
-    // todo:: make a custom router with params transit.
-    this.data = (router.getParams() as object)['data'] as Tag
+
+    this.tag = (router.getParams() as object)['tag'] as Tag
+    this.posts = (router.getParams() as object)['posts'] as Post[]
+    this.scene = (router.getParams() as object)['scene'] as PostItemScene
+    this.category = (router.getParams() as object)['category'] as Category
     this.loadTagPages()
+    this.updateTitle()
   }
 
   build() {
     Column() {
-      Toolbar({ title: this.data.name })
+      Toolbar({ title: this._title })
       PageLoading({
-        loadState: this.loadState,
+        loadState: this._loadState,
         onReload: () => {
           this.loadTagPages()
         }
@@ -48,9 +55,9 @@ struct TagCatgDetail {
   @Builder
   private PostList() {
     List({ scroller: this.scroller }) {
-      ForEach(this.posts, (item: Post, index: number) => {
+      ForEach(this._posts, (item: Post, index: number) => {
         ListItem() {
-          PostSummaryItem({ data: item, index: index + 1 })
+          PostSummaryItem({ data: item, index: index + 1, scene: this.scene })
             .onClick(() => {
               VRouter.jumpPost(item)
             })
@@ -58,7 +65,7 @@ struct TagCatgDetail {
       })
     }
     .scrollBar(BarState.Off)
-    .width('95%')
+    .width('100%')
     .height('100%')
     .listDirection(Axis.Vertical)
     .alignListItem(ListItemAlign.Center)
@@ -66,18 +73,33 @@ struct TagCatgDetail {
   }
 
   async loadTagPages() {
-    if (this.isTag()) {
-      loadTagPage(this.data.slug)
+    if (this.tag) {
+      loadTagPage(this.tag.slug)
         .then((data) => {
           this.loadPages(data.pages, loadTagList)
         })
-    } else if (this.isCategory()) {
-      loadCategoryPage(this.data.slug)
+    } else if (this.category) {
+      loadCategoryPage(this.category.slug)
         .then((data) => {
           this.loadPages(data.pages, loadCategoryList)
         })
     } else {
-      ToastUtils.show(`unknown type api:${this.data.api}`)
+      this._posts = this.posts
+      this._loadState = LoadState.SUCCESS
+    }
+  }
+
+  updateTitle() {
+    if (this.tag) {
+      this._title = (this.tag).name
+    } else if (this.category) {
+      this._title = (this.category).name
+    } else {
+      if (this.scene === PostItemScene.ALL_POST) {
+        this._title = '所有文章'
+      } else if (this.scene === PostItemScene.CHARACTER) {
+        this._title = '字数统计'
+      }
     }
   }
 
@@ -89,14 +111,11 @@ struct TagCatgDetail {
   loadPages(pages: Page[], request: (data: string) => Promise<PostSummaryList>) {
     pages.forEach((page) => {
       request(page.api).then((data) => {
-        if (this.loadState == LoadState.LOADING) {
-          this.loadState = LoadState.SUCCESS
+        if (this._loadState == LoadState.LOADING) {
+          this._loadState = LoadState.SUCCESS
         }
-        this.posts = this.posts.concat(data.posts)
+        this._posts = this._posts.concat(data.posts)
       })
     })
   }
-
-  isTag = () => this.data.api.includes('api/tags')
-  isCategory = () => this.data.api.includes('api/categories')
 }

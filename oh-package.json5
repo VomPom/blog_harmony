@@ -3,7 +3,7 @@
   "description": "Please describe the basic information.",
   "dependencies": {
     "@ohos/pulltorefresh": "^2.1.2",
-    "@ohasasugar/hp-richtext": "^3.0.9"
+    "@tencent/mmkv": "^2.2.2"
   },
   "devDependencies": {
     "@ohos/hypium": "1.0.21",

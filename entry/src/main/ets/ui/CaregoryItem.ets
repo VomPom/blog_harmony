@@ -1,5 +1,6 @@
 import { VRouter } from "../componet/VRouter"
 import { Category } from "../model/Category"
+import { PostItemScene } from "./PostSummaryItem"
 
 /**
  * Created by @juliswang on 2025/04/21 22:26
@@ -29,7 +30,7 @@ export default struct CategoryItem {
           .fontSize(10)
       }
     }.onClick(() => {
-      VRouter.jumpTag(this.data)
+      VRouter.jumpPostListByType(this.data)
     })
   }
 }

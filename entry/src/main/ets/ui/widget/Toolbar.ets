@@ -30,8 +30,10 @@ export default struct Toolbar {
           .fontSize(15)
           .margin({ left: 15 })
           .maxLines(1)
+          .layoutWeight(1)
           .ellipsisMode(EllipsisMode.END)
           .fontWeight(500)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
 
         if (this.showSub) {
           if (this.subIconSrc === null) {

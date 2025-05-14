@@ -41,7 +41,7 @@ export default struct TagItem {
     .borderRadius(5)
     .backgroundColor($r("app.color.tag_bg"))
     .onClick(() => {
-      VRouter.jumpTag(this.data)
+      VRouter.jumpPostListByType(this.data)
     })
   }
 }

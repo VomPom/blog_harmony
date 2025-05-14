@@ -1,7 +1,6 @@
 import Toolbar from "../../ui/widget/Toolbar";
 import { Post } from "../../model/Post";
 import { webview } from "@kit.ArkWeb";
-import { RichTextOptionModelV2 } from '@ohasasugar/hp-richtext';
 import { LoadState } from "../../ui/widget/PageLoading";
 import AppConfig from "../../componet/config/AppConfig";
 import { VRouter } from "../../componet/VRouter";
@@ -46,9 +45,9 @@ struct PostDetail {
     ],
     "api": "api/posts/2025/02/24/Android屏幕刷新机制.json",
   }
+  @State loadProgress: number = 0
   private postSummary: Post = this.post
   private webController: webview.WebviewController = new webview.WebviewController();
-  richTextModel: RichTextOptionModelV2 = new RichTextOptionModelV2();
 
   async aboutToAppear() {
     // todo:: make a custom router with params transit.
@@ -58,6 +57,14 @@ struct PostDetail {
   build() {
     Column() {
       Toolbar({ title: this.postSummary.title })
+
+      Progress({ value: this.loadProgress, total: 100, type: ProgressType.Linear })
+        .width('100%')
+        .height(1)
+        .backgroundColor($r('app.color.main_grey'))
+        .color($r('app.color.main_dark'))
+        .visibility(this.loadProgress === 100 ? Visibility.Hidden : Visibility.Visible)
+
       Stack() {
         Web({ src: '', controller: this.webController })
           .onControllerAttached(() => {
@@ -79,14 +86,33 @@ struct PostDetail {
             scrollForward: NestedScrollMode.SELF_FIRST,
             scrollBackward: NestedScrollMode.SELF_FIRST
           })
-          .layoutMode(WebLayoutMode.NONE)
+          .onProgressChange((event) => {
+            this.loadProgress = event.newProgress
+          })
+          .layoutMode(WebLayoutMode.NONE)//
+            // 如果存在 http 的图片链接可能会打不开，需要启用
+            // 设置是否允许加载超文本传输协议（HTTP）和超文本传输安全协议（HTTPS）混合内容，默认不允许加载HTTP和HTTPS混合内容。
+            // https://developer.huawei.com/consumer/cn/doc/harmonyos-references-V5/ts-basic-components-web-V5
+          .mixedMode(MixedMode.All)
         if (this.loadState == LoadState.LOADING) {
           LoadingProgress()
             .width(50)
             .height(50)
-            .color($r("app.color.main"))
+            .color($r("app.color.main_light"))
         }
       }
     }
+  }
+
+  // todo:: 删除 header，让大标题消失掉
+  // this.removeElement('#header');
+  // 删除指定元素的通用方法
+  removeElement(selector: string) {
+    const jsCode = `
+      const element = document.querySelector('${selector}');
+      if (element) element.remove();
+    `;
+    this.webController.runJavaScript(jsCode)
+      .then(() => console.log('元素删除成功'))
   }
 }

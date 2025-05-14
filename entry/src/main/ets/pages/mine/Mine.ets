@@ -95,8 +95,7 @@ export default struct Mine {
   @Builder
   About() {
     InfoPanel({ title: "关于" }) {
-      InfoItem({ title: '应用名称', data: this.bundleInfo?.name })
-      InfoItem({ title: '应用版本', data: this.bundleInfo?.vendor })
+      InfoItem({ title: '应用名称', data: $r('app.string.app_name') })
       InfoItem({ title: '应用版本', data: this.bundleInfo?.versionName })
       InfoItem({ title: '安装时间', data: TimeUtils.format2(this.bundleInfo?.installTime ?? 0) })
       InfoItem({ title: '更新时间', data: TimeUtils.format2(this.bundleInfo?.updateTime ?? 0) })
@@ -150,7 +149,7 @@ struct SettingItem {
 @Component
 struct InfoItem {
   @Prop title: string
-  @Prop data: string
+  @Prop data: string | Resource
 
   build() {
     Row() {

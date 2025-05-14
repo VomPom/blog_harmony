@@ -1,7 +1,5 @@
-import preferences from '@ohos.data.preferences';
 import { log } from '../Log';
-import { ValueType } from '@kit.ArkData';
-import { GlobalContext } from '../GlobalContext';
+import { MMKV } from '@tencent/mmkv';
 
 /**
  * Created by @juliswang on 2025/04/29 11:01
@@ -30,8 +28,7 @@ export abstract class BaseRepository {
     params: P
   ): Promise<T> {
     return new Promise((resolve, reject) => {
-      let p = this.getPreferences()
-      let cache = p.getSync(cacheKey, "")
+      let cache = this.loadData<string>(cacheKey, '')
       if (cache == "" || forceUpdate) {
         if (forceUpdate) {
           log('load data by force fresh.')
@@ -44,11 +41,11 @@ export abstract class BaseRepository {
             if (data == undefined) {
               reject('response data is undefined.')
             } else {
-              p.putSync(cacheKey, JSON.stringify(data))
-              p.flushSync()
+              // p.putSync(cacheKey, JSON.stringify(data))
+              // p.flushSync()
+              this.saveData<string>(cacheKey, JSON.stringify(data))
               resolve(data as T)
             }
-
           })
           .catch(reject)
       } else {
@@ -79,10 +76,17 @@ export abstract class BaseRepository {
    * @param key
    * @param value
    */
-  saveData(key: string, value: ValueType) {
-    let p = this.getPreferences()
-    p.putSync(key, value)
-    p.flushSync()
+  saveData<T>(key: string, value: T) {
+    let mmkv = MMKV.defaultMMKV();
+    if (typeof value === 'string') {
+      mmkv.encodeString(key, value)
+    } else if (typeof value === 'boolean') {
+      mmkv.encodeBool(key, value)
+    } else if (typeof value === 'number') {
+      mmkv.encodeInt32(key, value)
+    } else {
+      throw Error('save data by unknown type of data...' + (typeof value))
+    }
   }
 
   /**
@@ -90,24 +94,16 @@ export abstract class BaseRepository {
    * @param key
    * @returns
    */
-  loadData(key: string): ValueType {
-    let p = this.getPreferences()
-    return p.getSync(key, "") as ValueType
+  loadData<T>(key: string, defaultValue: T): T {
+    let mmkv = MMKV.defaultMMKV();
+    if (typeof defaultValue === 'string') {
+      return (mmkv.decodeString(key) ?? defaultValue) as T;
+    } else if (typeof defaultValue === 'boolean') {
+      return (mmkv.decodeBool(key, false) ?? defaultValue) as T;
+    } else if (typeof defaultValue === 'number') {
+      return (mmkv.decodeInt32(key) ?? defaultValue) as T;
+    } else {
+      throw Error('load data by unknown type of data...' + (typeof defaultValue))
+    }
   }
-
-  /**
-   * 获取本地缓存对象
-   * todo:: use better efficient save api..
-   * @returns
-   */
-  getPreferences() {
-    let context = GlobalContext.getContext()
-    return preferences.getPreferencesSync(context, { name: this.preferencesName() })
-  }
-
-  /**
-   * 存储名
-   * @returns
-   */
-  abstract preferencesName(): string
 }

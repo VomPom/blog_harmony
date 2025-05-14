@@ -18,14 +18,10 @@ export class ConfigRepository extends BaseRepository {
   }
 
   saveIsDark(isDark: boolean) {
-    this.saveData(KEY_DARK, isDark)
+    this.saveData<boolean>(KEY_DARK, isDark)
   }
 
   isDark(): boolean {
-    return this.loadData(KEY_DARK) as boolean
-  }
-
-  preferencesName(): string {
-    return "configs"
+    return this.loadData<boolean>(KEY_DARK, false)
   }
 }

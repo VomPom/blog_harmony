@@ -1,5 +1,5 @@
 import { LoadState, PageLoading } from "../../ui/widget/PageLoading"
-import { PullToRefresh } from '@ohos/pulltorefresh'
+import { PullToRefresh, PullToRefreshV2 } from '@ohos/pulltorefresh'
 import { Post } from "../../model/Post";
 import PostSummaryItem from "../../ui/PostSummaryItem";
 import { log } from "../../componet/Log";
@@ -25,7 +25,6 @@ export default struct Blog {
   private maxPages: number = 0
   private currentPage: number = 1 // generate api index start from 1, not 0.
   private scroller: Scroller = new Scroller();
-  showTabBarListener?: (showTabBar: boolean) => void
   private repository: PostsRepository = new PostsRepository()
 
   aboutToAppear(): void {
@@ -68,6 +67,9 @@ export default struct Blog {
                   this.hasMore = false;
                   resolve('no more...')
                 }
+              }).catch((e: BusinessError) => {
+                this.hasMore = false;
+                resolve('no more data...' + e.message)
               })
             });
           }
@@ -88,19 +90,8 @@ export default struct Blog {
         }
       })
     }
-    .onDidScroll((scrollOffset: number, scrollState: ScrollState) => {
-      if (this.loadState == LoadState.LOADING) {
-        return
-      }
-      log("scrollOffset:" + scrollOffset + " scrollState:" + scrollState)
-      if (scrollState == ScrollState.Scroll) {
-        this.showTabBarListener?.(scrollOffset < 0)
-      } else if (scrollState == ScrollState.Idle) {
-        this.showTabBarListener?.(true)
-      }
-    })
     .scrollBar(BarState.Off)
-    .width('95%')
+    .width('100%')
     .height('100%')
     .listDirection(Axis.Vertical)
     .alignListItem(ListItemAlign.Center)

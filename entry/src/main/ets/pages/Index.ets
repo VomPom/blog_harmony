@@ -29,11 +29,7 @@ struct Index {
       if (this.isPermissionGrant) {
         Tabs({ barPosition: BarPosition.End, controller: this.tabController }) {
           TabContent() {
-            Blog({
-              showTabBarListener: (showTabBar: boolean) => {
-                this.showTabBar = showTabBar
-              }
-            })
+            Blog()
           }
           .tabBar(this.createTabMenu(0))
 

@@ -1,4 +1,5 @@
 import { Post } from "../../model/Post";
+import { log } from "../Log";
 
 /**
  * 计算所有的文章字数(只计算汉字)
@@ -6,8 +7,14 @@ import { Post } from "../../model/Post";
  */
 export function calLetters(allPost: Post[]): number {
   return allPost.reduce((total, post) => {
-    return total + countChineseChars(post.content);
+    let cnt = countChineseChars(post.content);
+    log(`字数统计 [${cnt}]-> ${post.title}`)
+    return total + cnt;
   }, 0);
+}
+
+export function calLetter(post: Post): number {
+  return countChineseChars(post.content);
 }
 
 function countChineseChars(str: string | undefined): number {

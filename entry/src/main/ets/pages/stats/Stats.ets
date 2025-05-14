@@ -7,8 +7,11 @@ import { ContentWithToolbar } from "../../ui/ContentPage"
 import CategoryItem from "../../ui/CaregoryItem"
 import { StatsRepository } from "../../componet/repository/StatsRepository"
 import { log } from "../../componet/Log"
-import { faceDetector } from "@kit.CoreVisionKit"
-import { LoadState, PageLoading } from "../../ui/widget/PageLoading"
+import { LoadState } from "../../ui/widget/PageLoading"
+import { Post } from "../../model/Post"
+import { calLetter, calLetters } from "../../componet/utils/StatsUtils"
+import { VRouter } from "../../componet/VRouter"
+import { PostItemScene } from "../../ui/PostSummaryItem"
 
 /**
  * Created by @juliswang on 2025/04/21 22:36
@@ -20,6 +23,7 @@ import { LoadState, PageLoading } from "../../ui/widget/PageLoading"
 export default struct Stats {
   @State tags: Tag[] = []
   @State categories: Category[] = []
+  @State allPosts: Post[] = []
   @State postPage: Pages = new Pages()
   @State forceRefresh: boolean = false
   @State loadState: LoadState = LoadState.LOADING
@@ -48,12 +52,25 @@ export default struct Stats {
   @Builder
   Summary() {
     Row() {
-      StatsLabel({ count: this.postPage.count, state: this.loadState, label: "篇" })
-      // StatsLabel({ count: calLetters(this.allPost), label: "字数" })
+      StatsLabel({
+        count: this.postPage.count,
+        state: this.loadState,
+        label: "篇",
+        click: () => {
+          VRouter.jumpPostListByType(this.allPosts, PostItemScene.ALL_POST)
+        }
+      })
+
+      StatsLabel({
+        count: calLetters(this.allPosts), label: "字数", click: () => {
+          let sortedData = this.allPosts.slice().sort((a: Post, b: Post) => calLetter(b) - calLetter(a))
+          VRouter.jumpPostListByType(sortedData, PostItemScene.CHARACTER)
+        }
+      })
       StatsLabel({ count: this.categories.length, state: this.loadState, label: "分类" })
       StatsLabel({ count: this.tags.length, state: this.loadState, label: "标签" })
     }
-    .justifyContent(FlexAlign.SpaceBetween)
+    .justifyContent(FlexAlign.Center)
   }
 
   @Builder
@@ -90,7 +107,7 @@ export default struct Stats {
   @Builder
   Title(title: string) {
     Text(title)
-      .fontColor($r('app.color.title_text'))
+      .fontColor($r('app.color.light_color'))
       .fontSize(18)
       .fontWeight(500)
       .margin({ bottom: 10 })
@@ -106,7 +123,7 @@ export default struct Stats {
     })
 
     this.repository.getCategories(this.forceRefresh).then((data) => {
-      this.categories =[...data]
+      this.categories = [...data]
       this.loadState = LoadState.SUCCESS
     }).catch((err: object) => {
       log(`[getCategories] err, err:${err}`)
@@ -119,6 +136,12 @@ export default struct Stats {
       log(`[getPostsPage] err, err:${err}`)
     })
 
+    this.repository.getAllPosts(this.forceRefresh).then((data) => {
+      this.allPosts = data
+      this.loadState = LoadState.SUCCESS
+    }).catch((err: object) => {
+      log(`[getPostsPage] err, err:${err}`)
+    })
   }
 }
 
@@ -128,6 +151,8 @@ struct StatsLabel {
   @Prop count: number
   @Prop label: string
   @Prop state: LoadState
+  click: () => void = () => {
+  }
 
   build() {
     Column() {
@@ -142,7 +167,6 @@ struct StatsLabel {
             .fontSize(15)
         }
       }
-      .width(30)
       .height(15)
 
       Text(this.label)
@@ -151,5 +175,6 @@ struct StatsLabel {
     }
     .layoutWeight(1)
     .margin({ bottom: 20 })
+    .onClick(this.click)
   }
 }

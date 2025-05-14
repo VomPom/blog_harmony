@@ -9,8 +9,16 @@
       "value": "#FFFFFF"
     },
     {
-      "name": "main",
+      "name": "main_light",
       "value": "#3070e5"
+    },
+    {
+      "name": "main_dark",
+      "value": "#333333"
+    },
+    {
+      "name": "main_grey",
+      "value": "#CBC7C7"
     },
     {
       "name": "tag_bg",

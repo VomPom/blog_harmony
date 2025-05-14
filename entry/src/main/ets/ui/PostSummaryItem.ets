@@ -6,16 +6,24 @@ import { Category } from "../model/Category";
 import TagItem from "./TagItem";
 import CategoryItem from "./CaregoryItem";
 import { webview } from "@kit.ArkWeb";
+import { calLetter } from "../componet/utils/StatsUtils";
 
 /**
  * Created by @juliswang on 2025/04/21 22:25
  *
  * @Description 内容简要
  */
+export enum PostItemScene {
+  DEFAULT = 0, // 默认展示所有数据
+  ALL_POST = 1, // 展示所有信息
+  CHARACTER = 2 // 展示统计字数
+}
+
 @Preview
 @Component
 export default struct PostSummaryItem {
   index: number = 0
+  scene: PostItemScene = PostItemScene.DEFAULT
   data: Post = {
     "title": "Android屏幕刷新机制",
     "slug": "Android屏幕刷新机制",
@@ -48,24 +56,28 @@ export default struct PostSummaryItem {
       Column() {
         this.Title()
         Blank().height(3)
-        this.TimeAndCategories()
-        Blank().height(5)
-        // todo: use better way to show summary.
-        this.Summary()
-        Blank().height(5)
-        this.Tags()
+        if (this.scene === PostItemScene.DEFAULT) {
+          this.TimeAndCategories()
+          Blank().height(5)
+          this.Summary()
+          Blank().height(5)
+          this.Tags()
+        }
       }
       .alignItems(HorizontalAlign.Start)
     }
     .shadow({
-      radius: 5,
+      radius: 1,
       offsetY: 0,
       offsetX: 0,
       color: "#bfbfbf"
     })
-    .width('100%')
+    .width('95%')
     .padding(5)
-    .margin({ bottom: 10 })
+    .margin({
+      bottom: 8,
+      top: 3
+    })
     .borderColor(Color.Gray)
     .borderRadius(5)
     .backgroundColor($r("app.color.content_bg"))
@@ -74,6 +86,10 @@ export default struct PostSummaryItem {
 
   @Builder
   Title() {
+    if (this.scene === PostItemScene.CHARACTER) {
+      Text(`[${calLetter(this.data)}字]`)
+        .fontSize(10)
+    }
     Text(this.data.title)
       .fontSize(16)
       .fontWeight(500)
@@ -119,7 +135,12 @@ export default struct PostSummaryItem {
       .maxLines(5)
       .fontSize(13)
       .borderRadius(5)
-      .padding(5)
+      .padding({
+        left: 5,
+        right: 5,
+        top: 8,
+        bottom: 8
+      })
       .backgroundColor($r('app.color.summary_bg'))
       .textOverflow({ overflow: TextOverflow.Ellipsis })
       .margin({

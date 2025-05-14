@@ -4,14 +4,14 @@ import { window } from '@kit.ArkUI';
 import WindowManager from '../componet/WindowManager';
 import { ColorModeManager } from '../componet/ColorModeManager';
 import { GlobalContext } from '../componet/GlobalContext';
+import { VMKit } from '../VMKit';
 
 const DOMAIN = 0x0000;
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
-    GlobalContext.init(this.context)
-    ColorModeManager.getInstance().init()
+    VMKit.init(this.context)
   }
 
   onDestroy(): void {

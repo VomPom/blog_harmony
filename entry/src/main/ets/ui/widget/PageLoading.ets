@@ -17,7 +17,7 @@ export struct PageLoading {
         LoadingProgress()
           .width(50)
           .height(50)
-          .color($r("app.color.main"))
+          .color($r("app.color.main_light"))
       } else if (this.loadState === LoadState.SUCCESS) {
         this.content();
       } else if (this.loadState === LoadState.FAIL) {
@@ -44,6 +44,7 @@ export struct PageLoading {
         })
       }
     }
+    .layoutWeight(1)
     .width('100%')
     .height('100%')
   }
