@@ -4,7 +4,7 @@
  * @Description
  */
 export default class AppConfig {
-  static BASE_URL: string = "https://cdn.julis.wang/blog/";
+  static BASE_URL: string = "https://julis.wang/";
   static AVATAR: string = "https://cdn.julis.wang/blogavatar.png";
   static BLOG_URL: string = "https://julis.wang";
   static BLOG_NAME: string = "落叶挽歌";
